@@ -1,0 +1,142 @@
+version: '3'
+
+networks:
+  laravel10:
+
+volumes:
+  jenkins_home:
+
+services:
+  jenkins10:
+    build:
+      context: ./dockerfiles
+      dockerfile: jenkins.dockerfile
+    container_name: jenkins10
+    ports:
+      - 8090:8080
+      - 8445:443
+      - 50001:50000
+    volumes:
+      - jenkins_home:/var/www.html/jenkins_home
+    networks:
+      - laravel10
+
+  nginx10:
+    build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-youruser}
+    container_name: nginx10
+    ports:
+      - 8005:80
+    volumes:
+      - ./:/var/www/html:delegated
+    depends_on:
+      - php10
+      - redis10
+      - mysql10
+      - mailhog10
+    networks:
+      - laravel10
+
+  mysql10:
+    image: mariadb:10.6
+    container_name: mysql10
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 3395:3306
+    environment:
+      MYSQL_DATABASE: laravel10
+      MYSQL_USER: laravel10
+      MYSQL_PASSWORD: laravel10
+      MYSQL_ROOT_PASSWORD: laravel10
+      SERVICE_TAGS: dev10
+      SERVICE_NAME: mysql10
+    networks:
+      - laravel10
+
+  php10:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-youruser}
+    container_name: php10
+    volumes:
+      - ./:/var/www/html:delegated
+    networks:
+      - laravel10
+
+  redis10:
+    image: redis:alpine
+    container_name: redis10
+    restart: unless-stopped
+    ports:
+      - 6385:6379
+    networks:
+      - laravel10
+
+  composer10:
+    build:
+      context: ./dockerfiles
+      dockerfile: composer.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-youruser}
+    container_name: composer10
+    volumes:
+      - ./:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php10
+    user: ${USER:-youruser}
+    entrypoint: ['composer', '--ignore-platform-reqs']
+    networks:
+      - laravel10
+
+  npm10:
+    image: node:13.7
+    container_name: npm10
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - 3005:3000
+      - 3006:3001
+    working_dir: /var/www/html
+    entrypoint: ['npm']
+    networks:
+      - laravel10
+
+  artisan10:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USER=${USER:-youruser}
+    container_name: artisan10
+    volumes:
+      - ./:/var/www/html:delegated
+    depends_on:
+      - mysql10
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - laravel10
+
+  mailhog10:
+    image: mailhog/mailhog:latest
+    container_name: mailhog10
+    ports:
+      - 1028:1025
+      - 8028:8025
+    networks:
+      - laravel10

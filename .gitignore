@@ -1,0 +1,64 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+
+
+
+
+# Laravel & PHP specific
+/vendor
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/storage/framework/cache/data
+/storage/framework/sessions
+/storage/framework/testing
+/storage/framework/views
+/storage/logs
+.env
+Homestead.yaml
+Homestead.json
+.idea
+.phpunit.result.cache
+.phpunit.cache
+*.phpunit.result.cache
+*.phpunit.cache
+.phpstorm.meta.php
+
+# Laravel Mix
+/public/css/app.css
+/public/js/app.js
+/public/mix-manifest.json
+
+# IDE & Text Editor Specific
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Composer
+composer.lock
+
+# NPM & Yarn
+package-lock.json
+yarn.lock
+
+# Other
+.DS_Store
+Thumbs.db
